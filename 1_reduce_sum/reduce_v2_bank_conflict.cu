@@ -18,7 +18,7 @@ __global__ void reduce_v2(float *d_in,float *d_out){
     // 基于v1作出改进: 从之前的当前线程ID加2*线程ID位置然后不断加上*2位置上的数据，改成不断地对半相加，以消除bank conflict
     // 此时一个block对d_in这块数据的reduce sum结果保存在id为0的线程上面
     for (unsigned int index = blockDim.x / 2; index > 0; index >>= 1) {
-        if (tid < index) {
+        if (tid < index) {   // 这里其实还改变了工作线程的排布，让一个block里工作的线程都排在最前面
             smem[tid] += smem[tid + index];
         }
         __syncthreads();
